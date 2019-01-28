@@ -1,0 +1,13 @@
+[{
+    "handle": "me",
+    "id": "AAPL",
+    "price": 42
+}, {
+    "handle": "me",
+    "id": "AMZN",
+    "price": 120
+}, {
+    "handle": "me",
+    "id": "TSLA",
+    "price": 420
+}]

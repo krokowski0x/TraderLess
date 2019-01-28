@@ -1,0 +1,19 @@
+[{
+    "handle": "me",
+    "stock": {
+        "id": "AAPL",
+        "price": 42
+    },
+    "amount": 2,
+    "type": "buy",
+    "created_at": "not today"
+}, {
+    "handle": "me",
+    "stock": {
+        "id": "TSLA",
+        "price": 420
+    },
+    "amount": 2,
+    "type": "buy",
+    "created_at": "today"
+}]
