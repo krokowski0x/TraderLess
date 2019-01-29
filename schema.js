@@ -1,20 +1,19 @@
 const schema = `
 type Query {
     getUserInfo(handle: String!): User!
+    getStockInfo(id: String!): Stock!
 }
 
 type Mutation {
     buy(
         handle: String!
-        id: String
-        price: Float!
+        id: String!
         amount: Int!
     ): String!
 
     sell(
         handle: String!
-        id: String
-        price: Float!
+        id: String!
         amount: Int!
     ): String!
 }
@@ -37,7 +36,7 @@ type User {
 
 type Transaction {
     handle: String!
-    id: ID
+    id: String!
     stock: Stock!
     amount: Int!
     type: String!
@@ -45,7 +44,6 @@ type Transaction {
 }
 
 type Stock {
-    handle: String!
     id: String!
     price: Float!
 }
