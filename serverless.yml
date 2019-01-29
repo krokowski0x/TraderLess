@@ -28,6 +28,8 @@ custom:
         sources:
           - table: Users
             sources: [seed-data/Users.json]
+          - table: Transactions
+            sources: [seed-data/Transactions.json]
           - table: Stocks
             sources: [seed-data/Stocks.json]
 
@@ -59,6 +61,41 @@ resources:
           ReadCapacityUnits: 10
           WriteCapacityUnits: 10
         TableName: 'Users'
+    TransactionsTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        AttributeDefinitions:
+          - 
+            AttributeName: id
+            AttributeType: S
+          - 
+            AttributeName: handle
+            AttributeType: S
+          - 
+            AttributeName: amount
+            AttributeType: N
+        ProvisionedThroughput:
+          ReadCapacityUnits: 10
+          WriteCapacityUnits: 10
+        TableName: 'Transactions'
+        GlobalSecondaryIndexes:
+          -
+            IndexName: transaction-index
+            KeySchema:
+              -
+                AttributeName: handle
+                KeyType: HASH
+              -
+                AttributeName: amount
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 50
+              WriteCapacityUnits: 50
     StocksTable:
       Type: 'AWS::DynamoDB::Table'
       Properties:
