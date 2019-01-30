@@ -1,7 +1,8 @@
-
-// add to handler.js
+import nanoid from 'nanoid';
+import * as fetch from 'node-fetch';
 import dynamodb from 'serverless-dynamodb-client';
 
+const API_KEY = '8JC40JDH4MIAI8Z7';
 let docClient;
 
 if (process.env.NODE_ENV === 'production') {
@@ -12,7 +13,6 @@ if (process.env.NODE_ENV === 'production') {
   docClient = dynamodb.doc;
 }
 
-// add to handler.js
 const promisify = foo =>
   new Promise((resolve, reject) => {
     foo((error, result) => {
@@ -63,7 +63,10 @@ const data = {
       )
     ).then(result => result.Items[0]);
   },
-  getStockInfo(args) {
+  async getStockInfo(args) {
+    const response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${args.id}&apikey=${API_KEY}`);
+    const result = await response.json();
+    console.log(result);
     return promisify(callback =>
       docClient.query(
         {
@@ -77,19 +80,17 @@ const data = {
       )
     ).then(result => result.Items[0]);
   },
-  getUserInfo(args) {
-    return promisify(callback =>
-      docClient.query(
-        {
-          TableName: 'Stocks',
-          KeyConditionExpression: 'handle = :v1',
-          ExpressionAttributeValues: {
-            ':v1': args.handle,
-          },
-        },
-        callback
-      )
-    ).then(result => result.Items[0]);
+  async getMarketInfo() {
+    const response = await fetch('https://pkgstore.datahub.io/core/s-and-p-500-companies/constituents_json/data/64dd3e9582b936b0352fdd826ecd3c95/constituents_json.json')
+    const result = await response.json();
+    console.log(result);
+    return promisify(callback => {
+      const params = {
+        TableName: 'Stocks',
+      };
+
+      docClient.scan(params, callback);
+    }).then(result => result.Items);
   },
   buy(args) {
     return promisify(callback => {
@@ -105,24 +106,24 @@ const data = {
     })
     .then(result => {
       const timestamp = new Date();
+      args.stock = result.Items[0];
 
       return promisify(callback => {
         const params = {
           TableName: 'Transactions',
           Item: {
-            "id": "3",
+            "id": nanoid(),
             "handle": args.handle,
-            "stock": result.Items[0],
+            "stock": args.stock,
             "amount": args.amount,
             "type": "buy",
-            "created_at": timestamp.toLocaleDateString,
+            "created_at": timestamp.toLocaleDateString(),
           }
         };
   
         docClient.put(params, callback);
     })})
     .then(result => {
-      console.log("transaction:", result)
       return promisify(callback =>
         docClient.update(
           {
@@ -132,7 +133,7 @@ const data = {
             },
             UpdateExpression: "set balance = balance - :b",
             ExpressionAttributeValues:{
-              ":b": args.amount * 5,
+              ":b": args.amount * args.stock.price,
             },
           },
           callback
@@ -177,6 +178,7 @@ export const resolvers = {
   Query: {
     getUserInfo: (root, args) => data.getUserInfo(args),
     getStockInfo: (root, args) => data.getStockInfo(args),
+    getMarketInfo: () => data.getMarketInfo(),
   },
   Mutation: {
     buy: (root, args) => data.buy(args),
