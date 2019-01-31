@@ -66,7 +66,20 @@ const data = {
   async getStockInfo(args) {
     const response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${args.id}&apikey=${API_KEY}`);
     const result = await response.json();
-    console.log(result);
+    const stockPrice = await Number(result['Global Quote']['05. price']);
+    const Userparams = {
+      TableName: 'Stocks',
+      Item: {
+        id: args.id,
+        price: stockPrice,
+      },
+    };
+
+    docClient.put(Userparams, function(err, data) {
+      if (err) {
+        console.error(JSON.stringify(err, null, 2));
+      }
+    });
     return promisify(callback =>
       docClient.query(
         {
@@ -83,7 +96,23 @@ const data = {
   async getMarketInfo() {
     const response = await fetch('https://pkgstore.datahub.io/core/s-and-p-500-companies/constituents_json/data/64dd3e9582b936b0352fdd826ecd3c95/constituents_json.json')
     const result = await response.json();
-    console.log(result);
+
+    result.forEach(function(stock) {
+      const params = {
+        TableName: 'Stocks',
+        Item: {
+          id: stock.Symbol,
+          price: 0,
+        },
+      };
+
+      docClient.put(Userparams, function(err, data) {
+        if (err) {
+          console.error(JSON.stringify(err, null, 2));
+        }
+      });
+    });
+    
     return promisify(callback => {
       const params = {
         TableName: 'Stocks',
