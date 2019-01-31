@@ -2,6 +2,7 @@ const schema = `
 type Query {
     getUserInfo(handle: String!): User!
     getStockInfo(id: String!): Stock!
+    getMarketInfo: [Stock]!
 }
 
 type Mutation {
