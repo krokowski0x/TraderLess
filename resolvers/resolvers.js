@@ -42,7 +42,7 @@ const data = {
         items: [],
       };
 
-      for (let i = 0; i < result.Items.length; i += 1) {
+      for (let i in result.Items.length) {
         listOfTransactions.items.push(result.Items[i]);
       }
 
@@ -106,7 +106,7 @@ const data = {
         },
       };
 
-      docClient.put(Userparams, function(err, data) {
+      docClient.put(params, function(err, data) {
         if (err) {
           console.error(JSON.stringify(err, null, 2));
         }
