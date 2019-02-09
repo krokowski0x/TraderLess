@@ -19,10 +19,6 @@ type Mutation {
     ): String!
 }
 
-type StockConnection {
-    items: [Stock]!
-}
-
 type TransactionConnection {
     items: [Transaction]!
 }
@@ -32,7 +28,6 @@ type User {
     handle: String!
     balance: Float!
     transactions: TransactionConnection
-    stocks: StockConnection
 }
 
 type Transaction {

@@ -20,8 +20,8 @@ const server = new ApolloServer({
     context,
   }),
   playground: {
-    endpoint: process.env.REACT_APP_GRAPHQL_ENDPOINT
-      ? process.env.REACT_APP_GRAPHQL_ENDPOINT
+    endpoint: process.env.GRAPHQL_ENDPOINT
+      ? process.env.GRAPHQL_ENDPOINT
       : '/production/graphql',
   },
   tracing: true,

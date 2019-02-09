@@ -2,12 +2,11 @@ import nanoid from 'nanoid';
 import * as fetch from 'node-fetch';
 import dynamodb from 'serverless-dynamodb-client';
 
-const API_KEY = '8JC40JDH4MIAI8Z7';
 let docClient;
 
 if (process.env.NODE_ENV === 'production') {
-  const AWSXRay = require('aws-xray-sdk'); // eslint-disable-line global-require
-  const AWS = AWSXRay.captureAWS(require('aws-sdk')); // eslint-disable-line global-require
+  const AWSXRay = require('aws-xray-sdk');
+  const AWS = AWSXRay.captureAWS(require('aws-sdk'));
   docClient = new AWS.DynamoDB.DocumentClient();
 } else {
   docClient = dynamodb.doc;
@@ -37,17 +36,7 @@ const data = {
       };
 
       docClient.query(params, callback);
-    }).then(result => {
-      const listOfTransactions = {
-        items: [],
-      };
-
-      for (let i in result.Items.length) {
-        listOfTransactions.items.push(result.Items[i]);
-      }
-
-      return listOfTransactions;
-    });
+    }).then(result => result.Items);
   },
   getUserInfo(args) {
     return promisify(callback =>
@@ -64,7 +53,7 @@ const data = {
     ).then(result => result.Items[0]);
   },
   async getStockInfo(args) {
-    const response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${args.id}&apikey=${API_KEY}`);
+    const response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${args.id}&apikey=${process.env.API_KEY}`);
     const result = await response.json();
     const stockPrice = await Number(result['Global Quote']['05. price']);
     const Userparams = {
@@ -75,7 +64,7 @@ const data = {
       },
     };
 
-    docClient.put(Userparams, function(err, data) {
+    docClient.put(Userparams, err => {
       if (err) {
         console.error(JSON.stringify(err, null, 2));
       }
@@ -97,7 +86,7 @@ const data = {
     const response = await fetch('https://pkgstore.datahub.io/core/s-and-p-500-companies/constituents_json/data/64dd3e9582b936b0352fdd826ecd3c95/constituents_json.json')
     const result = await response.json();
 
-    result.forEach(function(stock) {
+    result.forEach(stock => {
       const params = {
         TableName: 'Stocks',
         Item: {
@@ -106,7 +95,7 @@ const data = {
         },
       };
 
-      docClient.put(params, function(err, data) {
+      docClient.put(params, err => {
         if (err) {
           console.error(JSON.stringify(err, null, 2));
         }
@@ -152,7 +141,7 @@ const data = {
   
         docClient.put(params, callback);
     })})
-    .then(result => {
+    .then(() => {
       return promisify(callback =>
         docClient.update(
           {
@@ -169,7 +158,7 @@ const data = {
         )
       )
     })
-    .then(result => "Done");
+    .then(() => "Done");
   },
   sell(args) {
     return promisify(callback => {
@@ -199,7 +188,7 @@ const data = {
         )
       )
     })
-    .then(result => "Done");
+    .then(() => "Done");
   }
 };
 
