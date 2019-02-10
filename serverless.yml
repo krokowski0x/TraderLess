@@ -28,10 +28,6 @@ custom:
         sources:
           - table: Users
             sources: [seed-data/Users.json]
-          - table: Transactions
-            sources: [seed-data/Transactions.json]
-          - table: Stocks
-            sources: [seed-data/Stocks.json]
 
 functions:
   graphql:
