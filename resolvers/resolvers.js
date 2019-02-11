@@ -36,7 +36,17 @@ const data = {
       };
 
       docClient.query(params, callback);
-    }).then(result => result.Items);
+    }).then(result => {
+      const listOfTransactions = {
+        items: [],
+      };
+
+      for (let item of result.Items) {
+        listOfTransactions.items.push(item);
+      }
+
+      return listOfTransactions;
+    });
   },
   getUserInfo(args) {
     return promisify(callback =>
@@ -91,6 +101,7 @@ const data = {
         TableName: 'Stocks',
         Item: {
           id: stock.Symbol,
+          name: stock.Name,
           price: 0,
         },
       };
@@ -135,7 +146,7 @@ const data = {
             "stock": args.stock,
             "amount": args.amount,
             "type": "buy",
-            "created_at": timestamp.toLocaleDateString(),
+            "created_at": timestamp.toLocaleString(),
           }
         };
   
@@ -158,7 +169,7 @@ const data = {
         )
       )
     })
-    .then(() => "Done");
+    .then(() => args.stock);
   },
   sell(args) {
     return promisify(callback => {
@@ -171,7 +182,27 @@ const data = {
       };
 
       docClient.query(params, callback);
-    }).then(result => {
+    })
+    .then(result => {
+      const timestamp = new Date();
+      args.stock = result.Items[0];
+
+      return promisify(callback => {
+        const params = {
+          TableName: 'Transactions',
+          Item: {
+            "id": nanoid(),
+            "handle": args.handle,
+            "stock": args.stock,
+            "amount": args.amount,
+            "type": "buy",
+            "created_at": timestamp.toLocaleString(),
+          }
+        };
+  
+        docClient.put(params, callback);
+    })})
+    .then(() => {
       return promisify(callback =>
         docClient.update(
           {
@@ -181,15 +212,15 @@ const data = {
             },
             UpdateExpression: "set balance = balance + :b",
             ExpressionAttributeValues:{
-              ":b": args.amount * result.Items[0].price,
+              ":b": args.amount * args.stock.price,
             },
           },
           callback
         )
       )
     })
-    .then(() => "Done");
-  }
+    .then(() => args.stock);
+  },
 };
 
 export const resolvers = {

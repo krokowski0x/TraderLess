@@ -10,13 +10,13 @@ type Mutation {
         handle: String!
         id: String!
         amount: Int!
-    ): String!
+    ): Stock!
 
     sell(
         handle: String!
         id: String!
         amount: Int!
-    ): String!
+    ): Stock!
 }
 
 type TransactionConnection {
@@ -41,6 +41,7 @@ type Transaction {
 
 type Stock {
     id: String!
+    name: String
     price: Float!
 }
 
@@ -50,5 +51,4 @@ schema {
     mutation: Mutation
 }`;
 
-// eslint-disable-next-line import/prefer-default-export
 export { schema };
