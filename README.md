@@ -4,7 +4,8 @@ Simple stock exchange simulator, built with GraphQL, Serverless Framework, AWS L
 
 ## Brief description
 
-App, in its current form, lets you check stock prices of S&P500 companies and simulate buying or selling them, with your initial account balance of 100.000 $.
+This app, in its current form, lets you check stock prices of S&P500 companies and simulate buying or selling them, with your initial account balance of 100.000$.
+There is a Medium article comming up shortly, about how to build such an app and all of the theory behind different technologies used in here.
 
 ## Available queries
 
@@ -19,6 +20,7 @@ App, in its current form, lets you check stock prices of S&P500 companies and si
 
 ## Built with
 
+* [This amazing boilerplate](https://github.com/serverless/serverless-graphql) - simple GraphQL/Serverless Framework/DynamoDB boilerplate
 * [Serverless Framework](https://serverless.com/) - a great thing, if you don't want to get your hands dirty with DevOps
 * [GraphQL](https://graphql.org/) - a great thing if you don't want to provide hunderds of REST API endpoints
 * [Apollo Server](https://www.apollographql.com/docs/apollo-server/servers/lambda.html) - a great thing, if you don't really know GraphQL, but want to use it
