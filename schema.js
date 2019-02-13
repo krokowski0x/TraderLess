@@ -45,7 +45,6 @@ type Stock {
     price: Float!
 }
 
-
 schema {
     query: Query
     mutation: Mutation
