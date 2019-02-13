@@ -10,15 +10,4 @@ if (process.env.NODE_ENV === 'production') {
   docClient = dynamodb.doc;
 }
 
-const promisify = foo =>
-  new Promise((resolve, reject) => {
-    foo((error, result) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(result);
-      }
-    });
-  });
-
-export { docClient, promisify }
+export { docClient }
