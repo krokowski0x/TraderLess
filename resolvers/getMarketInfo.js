@@ -1,34 +1,30 @@
 import * as fetch from 'node-fetch';
-import { docClient, promisify } from './setup';
+import { docClient } from './setup';
 
 const getMarketInfo = async () => {
-    const response = await fetch('https://pkgstore.datahub.io/core/s-and-p-500-companies/constituents_json/data/64dd3e9582b936b0352fdd826ecd3c95/constituents_json.json')
-    const result = await response.json();
+	const stockListURL = 'https://pkgstore.datahub.io/core/s-and-p-500-companies/constituents_json/data/64dd3e9582b936b0352fdd826ecd3c95/constituents_json.json'
+	const response = await fetch(stockListURL);
+	const result = await response.json();
 
-    result.forEach(stock => {
-        const params = {
-            TableName: 'Stocks',
-            Item: {
-                id: stock.Symbol,
-                name: stock.Name,
-                price: 0,
-            },
-        };
+	result.forEach(async stock => {
+		const params = {
+			TableName: 'Stocks',
+			Item: {
+				id: stock.Symbol,
+				name: stock.Name,
+				price: 0,
+			},
+		};
 
-        docClient.put(params, err => {
-            if (err) {
-                console.error(JSON.stringify(err, null, 2));
-            }
-        });
-    });
+		await docClient.put(params).promise();
+	});
 
-    return promisify(callback => {
-        const params = {
-            TableName: 'Stocks',
-        };
+	const params = {
+		TableName: 'Stocks',
+	};
+	const stocks = await docClient.scan(params).promise();
 
-        docClient.scan(params, callback);
-    }).then(result => result.Items);
+	return stocks.Items;
 };
 
 export { getMarketInfo }

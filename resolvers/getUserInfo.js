@@ -1,17 +1,16 @@
-import { docClient, promisify } from './setup';
+import { docClient } from './setup';
 
-const getUserInfo = (args) => {
-  return promisify(callback =>
-    docClient.query({
-        TableName: 'Users',
-        KeyConditionExpression: 'handle = :v1',
-        ExpressionAttributeValues: {
-          ':v1': args.handle,
-        },
-      },
-      callback
-    )
-  ).then(result => result.Items[0]);
+const getUserInfo = async (args) => {
+  const params = {
+    TableName: 'Users',
+    KeyConditionExpression: 'handle = :v1',
+    ExpressionAttributeValues: {
+      ':v1': args.handle,
+    },
+  };
+  const result = await docClient.query(params).promise();
+
+  return result.Items[0];
 };
 
 export { getUserInfo }

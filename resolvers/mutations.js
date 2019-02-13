@@ -1,56 +1,45 @@
 import nanoid from 'nanoid';
-import { docClient, promisify } from './setup';
+import { docClient } from './setup';
 
-const createTransaction = (args, type, operand) => {
-  return promisify(callback => {
-      const params = {
-        TableName: 'Stocks',
-        KeyConditionExpression: 'id = :v1',
-        ExpressionAttributeValues: {
-          ':v1': args.id,
-        },
-      };
+const createTransaction = async (args, type, operand) => {
+  const params1 = {
+    TableName: 'Stocks',
+    KeyConditionExpression: 'id = :v1',
+    ExpressionAttributeValues: {
+      ':v1': args.id,
+    },
+  };
+  let stock = await docClient.query(params1).promise();
+  stock = stock.Items[0];
 
-      docClient.query(params, callback);
-    })
-    .then(result => {
-      const timestamp = new Date();
-      args.stock = result.Items[0];
+  const params2 = {
+    TableName: 'Transactions',
+    Item: {
+      "id": nanoid(),
+      "handle": args.handle,
+      "stock": stock,
+      "amount": args.amount,
+      "type": type,
+      "created_at": new Date().toLocaleString(),
+    }
+  };
+  const transaction = await docClient.put(params2).promise();
 
-      return promisify(callback => {
-        const params = {
-          TableName: 'Transactions',
-          Item: {
-            "id": nanoid(),
-            "handle": args.handle,
-            "stock": args.stock,
-            "amount": args.amount,
-            "type": type,
-            "created_at": timestamp.toLocaleString(),
-          }
-        };
+  const params3 = {
+    TableName: 'Users',
+    Key: {
+      "handle": args.handle,
+    },
+    UpdateExpression: `set balance = balance ${operand} :b`,
+    ExpressionAttributeValues: {
+      ":b": args.amount * stock.price,
+    },
+  };
+  await docClient.update(params3).promise();
 
-        docClient.put(params, callback);
-      })
-    })
-    .then(() => {
-      return promisify(callback =>
-        docClient.update({
-            TableName: 'Users',
-            Key: {
-              "handle": args.handle,
-            },
-            UpdateExpression: `set balance = balance ${operand} :b`,
-            ExpressionAttributeValues: {
-              ":b": args.amount * args.stock.price,
-            },
-          },
-          callback
-        )
-      )
-    })
-    .then(() => args.stock);
+  return params2.Item;
 };
+
 const buy = args => createTransaction(args, "buy", "-");
 const sell = args => createTransaction(args, "sell", "+");
 
