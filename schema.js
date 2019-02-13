@@ -10,13 +10,13 @@ type Mutation {
         handle: String!
         id: String!
         amount: Int!
-    ): Stock!
+    ): Transaction!
 
     sell(
         handle: String!
         id: String!
         amount: Int!
-    ): Stock!
+    ): Transaction!
 }
 
 type TransactionConnection {
