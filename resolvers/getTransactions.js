@@ -1,7 +1,7 @@
 import { docClient } from './setup';
 
 const getTransactions = async (handle, args) => {
-  const params = {
+  const transactionQueryParams = {
     TableName: 'Transactions',
     KeyConditionExpression: 'handle = :v1',
     ExpressionAttributeValues: {
@@ -9,8 +9,7 @@ const getTransactions = async (handle, args) => {
     },
     IndexName: 'transaction-index'
   };
-
-  const result = await docClient.query(params).promise();
+  const result = await docClient.query(transactionQueryParams).promise();
   const listOfTransactions = {
     items: [],
   };

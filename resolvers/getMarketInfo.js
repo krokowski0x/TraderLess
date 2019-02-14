@@ -4,10 +4,10 @@ import { docClient } from './setup';
 const getMarketInfo = async () => {
 	const stockListURL = 'https://pkgstore.datahub.io/core/s-and-p-500-companies/constituents_json/data/64dd3e9582b936b0352fdd826ecd3c95/constituents_json.json'
 	const response = await fetch(stockListURL);
-	const result = await response.json();
+	const stockList = await response.json();
 
-	result.forEach(async stock => {
-		const params = {
+	stockList.forEach(async stock => {
+		const stockPutParams = {
 			TableName: 'Stocks',
 			Item: {
 				id: stock.Symbol,
@@ -16,13 +16,13 @@ const getMarketInfo = async () => {
 			},
 		};
 
-		await docClient.put(params).promise();
+		await docClient.put(stockPutParams).promise();
 	});
 
-	const params = {
+	const stockScanParams = {
 		TableName: 'Stocks',
 	};
-	const stocks = await docClient.scan(params).promise();
+	const stocks = await docClient.scan(stockScanParams).promise();
 
 	return stocks.Items;
 };

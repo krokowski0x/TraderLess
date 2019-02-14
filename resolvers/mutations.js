@@ -2,17 +2,17 @@ import nanoid from 'nanoid';
 import { docClient } from './setup';
 
 const createTransaction = async (args, type, operand) => {
-  const params1 = {
+  const stockQueryParams = {
     TableName: 'Stocks',
     KeyConditionExpression: 'id = :v1',
     ExpressionAttributeValues: {
       ':v1': args.id,
     },
   };
-  let stock = await docClient.query(params1).promise();
+  let stock = await docClient.query(stockQueryParams).promise();
   stock = stock.Items[0];
 
-  const params2 = {
+  const transactionPutParams = {
     TableName: 'Transactions',
     Item: {
       "id": nanoid(),
@@ -23,9 +23,9 @@ const createTransaction = async (args, type, operand) => {
       "created_at": new Date().toLocaleString(),
     }
   };
-  const transaction = await docClient.put(params2).promise();
+  const transaction = await docClient.put(transactionPutParams).promise();
 
-  const params3 = {
+  const userUpdateParams = {
     TableName: 'Users',
     Key: {
       "handle": args.handle,
@@ -35,9 +35,9 @@ const createTransaction = async (args, type, operand) => {
       ":b": args.amount * stock.price,
     },
   };
-  await docClient.update(params3).promise();
+  await docClient.update(userUpdateParams).promise();
 
-  return params2.Item;
+  return transactionPutParams.Item;
 };
 
 const buy = args => createTransaction(args, "buy", "-");

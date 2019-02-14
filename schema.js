@@ -19,15 +19,15 @@ type Mutation {
     ): Transaction!
 }
 
-type TransactionConnection {
-    items: [Transaction]!
-}
-
 type User {
     id: ID
     handle: String!
     balance: Float!
     transactions: TransactionConnection
+}
+
+type TransactionConnection {
+    items: [Transaction]!
 }
 
 type Transaction {

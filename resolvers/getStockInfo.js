@@ -2,9 +2,10 @@ import * as fetch from 'node-fetch';
 import { docClient } from './setup';
 
 const getStockInfo = async (args) => {
-  const response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${args.id}&apikey=${process.env.API_KEY}`);
-  const result = await response.json();
-  const stockPrice = await Number(result['Global Quote']['05. price']);
+  const stockDataURL = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${args.id}&apikey=${process.env.API_KEY}`;
+  const response = await fetch(stockDataURL);
+  const stockData = await response.json();
+  const stockPrice = await Number(stockData['Global Quote']['05. price']);
   const stockPutParams = {
     TableName: 'Stocks',
     Item: {
