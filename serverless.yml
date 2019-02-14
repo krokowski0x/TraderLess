@@ -1,10 +1,10 @@
 service: Traderless
 
-frameworkVersion: ">=1.21.0 <2.0.0"
+frameworkVersion: ">=1.4.0 <2.0.0"
 
 provider:
   name: aws
-  runtime: nodejs6.10
+  runtime: nodejs8.10
   stage: dev
   region: us-east-1
 
@@ -54,8 +54,8 @@ resources:
           - AttributeName: handle
             AttributeType: S
         ProvisionedThroughput:
-          ReadCapacityUnits: 10
-          WriteCapacityUnits: 10
+          ReadCapacityUnits: 50
+          WriteCapacityUnits: 50
         TableName: 'Users'
     TransactionsTable:
       Type: 'AWS::DynamoDB::Table'
@@ -64,29 +64,19 @@ resources:
           - AttributeName: id
             KeyType: HASH
         AttributeDefinitions:
-          - 
-            AttributeName: id
+          - AttributeName: id
             AttributeType: S
-          - 
-            AttributeName: handle
+          - AttributeName: handle
             AttributeType: S
-          - 
-            AttributeName: amount
-            AttributeType: N
         ProvisionedThroughput:
-          ReadCapacityUnits: 10
-          WriteCapacityUnits: 10
+          ReadCapacityUnits: 50
+          WriteCapacityUnits: 50
         TableName: 'Transactions'
         GlobalSecondaryIndexes:
-          -
-            IndexName: transaction-index
+          - IndexName: transaction-index
             KeySchema:
-              -
-                AttributeName: handle
+              - AttributeName: handle
                 KeyType: HASH
-              -
-                AttributeName: amount
-                KeyType: RANGE
             Projection:
               ProjectionType: ALL
             ProvisionedThroughput:
@@ -99,29 +89,19 @@ resources:
           - AttributeName: id
             KeyType: HASH
         AttributeDefinitions:
-          - 
-            AttributeName: id
+          - AttributeName: id
             AttributeType: S
-          - 
-            AttributeName: handle
+          - AttributeName: handle
             AttributeType: S
-          - 
-            AttributeName: price
-            AttributeType: N
         ProvisionedThroughput:
-          ReadCapacityUnits: 10
-          WriteCapacityUnits: 10
+          ReadCapacityUnits: 50
+          WriteCapacityUnits: 50
         TableName: 'Stocks'
         GlobalSecondaryIndexes:
-          -
-            IndexName: stock-index
+          - IndexName: stock-index
             KeySchema:
-              -
-                AttributeName: handle
+              - AttributeName: handle
                 KeyType: HASH
-              -
-                AttributeName: price
-                KeyType: RANGE
             Projection:
               ProjectionType: ALL
             ProvisionedThroughput:
