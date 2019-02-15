@@ -41,7 +41,7 @@ type Transaction {
 
 type Stock {
     id: String!
-    name: String
+    name: String!
     price: Float!
 }
 

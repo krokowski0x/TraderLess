@@ -23,7 +23,7 @@ const createTransaction = async (args, type, operand) => {
       "created_at": new Date().toLocaleString(),
     }
   };
-  const transaction = await docClient.put(transactionPutParams).promise();
+  await docClient.put(transactionPutParams).promise();
 
   const userUpdateParams = {
     TableName: 'Users',
